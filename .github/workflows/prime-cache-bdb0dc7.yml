@@ -1,20 +1,38 @@
 name: Cache Demo
 
-on: [push]
+# When does this workflow run? On every push, or you can trigger it manually.
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
-  demo:
+  cache-job:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: prime-cache-bdb0dc7
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache/demo
-        key: cache-bdb0dc7
-    
-    - name: Echo result
-      run: echo "::notice:: Cache step ran (check logs for hit/miss)"
-    
-    - run: mkdir -p ~/.cache/demo && echo "data" > ~/.cache/demo/file.txt
+      # Step 1: Check out your repo's code (standard first step)
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Use the cache action with the required key
+      - name: Cache dependencies
+        id: my-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/my-cache-dir
+          key: cache-bdb0dc7
+
+      # Step 3: The specially named step that echoes hit or miss
+      - name: prime-cache-bdb0dc7
+        run: |
+          if [ "${{ steps.my-cache.outputs.cache-hit }}" == "true" ]; then
+            echo "Cache HIT - found from a previous run!"
+          else
+            echo "Cache MISS - no cache found, priming it now."
+            mkdir -p ~/my-cache-dir
+            echo "cached-data" > ~/my-cache-dir/data.txt
+          fi
+
+      # Step 4 (optional): Show what's in the cached folder
+      - name: Show cached content
+        run: cat ~/my-cache-dir/data.txt
