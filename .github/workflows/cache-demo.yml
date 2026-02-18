@@ -1,0 +1,27 @@
+name: Cache Demo
+
+on: [push]
+
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: prime-cache-bdb0dc7
+      id: cache-step
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/demo
+        key: cache-bdb0dc7
+    
+    - name: Show cache result
+      run: echo "Cache hit: ${{ steps.cache-step.outputs.cache-hit }}"
+    
+    - name: Create cache content (if miss)
+      if: steps.cache-step.outputs.cache-hit != 'true'
+      run: mkdir -p ~/.cache/demo && echo "demo-data" > ~/.cache/demo/file.txt
+    
+    - name: Verify cache
+      run: ls -la ~/.cache/demo || echo "No cache yet"
