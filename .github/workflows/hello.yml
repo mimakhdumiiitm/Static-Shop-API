@@ -1,0 +1,10 @@
+name: Hello World Action  # Name of your workflow
+
+on: [push]  # Triggers on every code push (easiest for testing)
+
+jobs:
+  test:
+    runs-on: ubuntu-latest  # Free GitHub computer (runner) to run on
+    steps:
+      - name: 22f3001418@ds.study.iitm.ac.in  # Your required step name
+        run: echo "Hello from GitHub Actions!"  # Simple command it runs
