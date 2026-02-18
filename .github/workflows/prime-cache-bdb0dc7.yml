@@ -19,9 +19,15 @@ jobs:
     - name: Show cache result
       run: echo "Cache hit: ${{ steps.cache-step.outputs.cache-hit }}"
     
-    - name: Create cache content (if miss)
-      if: steps.cache-step.outputs.cache-hit != 'true'
-      run: mkdir -p ~/.cache/demo && echo "demo-data" > ~/.cache/demo/file.txt
+    - name: Setup cache (always)
+      run: |
+        if [ "${{ steps.cache-step.outputs.cache-hit }}" != "true" ]; then
+          mkdir -p ~/.cache/demo
+          echo "demo-data" > ~/.cache/demo/file.txt
+          echo "Created cache content"
+        else
+          echo "Cache already exists"
+        fi
     
     - name: Verify cache
       run: ls -la ~/.cache/demo || echo "No cache yet"
