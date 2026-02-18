@@ -6,28 +6,15 @@ jobs:
   demo:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
     
     - name: prime-cache-bdb0dc7
-      id: cache-step
       uses: actions/cache@v4
       with:
         path: ~/.cache/demo
         key: cache-bdb0dc7
     
-    - name: Show cache result
-      run: echo "Cache hit: ${{ steps.cache-step.outputs.cache-hit }}"
+    - name: Echo result
+      run: echo "::notice:: Cache step ran (check logs for hit/miss)"
     
-    - name: Setup cache (always)
-      run: |
-        if [ "${{ steps.cache-step.outputs.cache-hit }}" != "true" ]; then
-          mkdir -p ~/.cache/demo
-          echo "demo-data" > ~/.cache/demo/file.txt
-          echo "Created cache content"
-        else
-          echo "Cache already exists"
-        fi
-    
-    - name: Verify cache
-      run: ls -la ~/.cache/demo || echo "No cache yet"
+    - run: mkdir -p ~/.cache/demo && echo "data" > ~/.cache/demo/file.txt
